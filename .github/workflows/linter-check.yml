@@ -1,0 +1,17 @@
+name: linter-check
+on:
+  push:
+    branches:
+      - '**'
+    tags:
+      - '**'
+jobs:
+  linter-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
+      - name: npm packages install
+        run: npm i
+      - name: check linter status
+        run: make lint
