@@ -182,7 +182,7 @@ export default () => {
             id,
           } = post;
           state.readPostIds.add(id);
-          state.modal = { title, description, link };
+          // state.moda = { title, description, link };
         }
       });
     });
