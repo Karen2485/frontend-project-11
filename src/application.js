@@ -161,7 +161,7 @@ export default () => {
           });
       });
 
-      elements.urlInput.addEventListener('change', (e) => {
+      // elements.urlInput.addEventListener('change', (e) => {
         state.form.fields.url = e.target.value.trim();
       });
 

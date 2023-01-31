@@ -13,7 +13,7 @@ export default (responseData) => {
 
   const itemElements = channel.getElementsByTagName('item');
   const items = [...itemElements].map((item) => {
-    const title = item.querySelector('title').textContent;
+    // const title = item.querySelector('title').textContent;
     const description = item.querySelector('description').textContent;
     const link = item.querySelector('channel link').textContent;
     return {
