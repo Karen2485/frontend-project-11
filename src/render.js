@@ -4,7 +4,7 @@ spinner.setAttribute('role', 'status');
 spinner.setAttribute('aria-hidden', 'true');
 spinner.setAttribute('style', 'margin-right: 0.3rem');
 
-// const createElement = (tagName, options = {}) => {
+const createElement = (tagName, options = {}) => {
   const element = document.createElement(tagName);
   const { style, textContent } = options;
   if (style) {

@@ -7,7 +7,7 @@ export default {
     feeds: 'Фиды',
     posts: 'Посты',
     preview: 'Просмотр',
-    // rssAdded: 'RSS успешно загружен',
+    rssAdded: 'RSS успешно загружен',
     errors: {
       empty: 'Не должно быть пустым',
       invalidUrl: 'Ссылка должна быть валидным URL',
