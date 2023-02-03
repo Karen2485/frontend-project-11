@@ -150,7 +150,7 @@ export default () => {
             addPosts(feedId, parsedRSS.items, state);
             setAutoUpdade(feedId, state);
 
-            state.form.fields.url = '';
+            // state.form.fields.url = '';
           })
           .catch((error) => {
             const message = error.message ?? 'default';
