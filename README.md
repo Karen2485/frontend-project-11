@@ -6,3 +6,15 @@
 
 ### Link to the project:
 [RSS-aggregator](https://frontend-project-11-n6oswnzwl-asatran687-gmailcom.vercel.app)
+
+## Setup
+
+```sh
+make install
+```
+
+## Run
+
+```sh
+make develop
+```
