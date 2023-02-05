@@ -5,7 +5,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/6164d29d8d148bc9ebd3/maintainability)](https://codeclimate.com/github/Karen2485/frontend-project-11/maintainability)
 
 ### Link to the project:
-[RSS-aggregator](https://frontend-project-11-n6oswnzwl-asatran687-gmailcom.vercel.app)
+[RSS-aggregator](https://frontend-project-11-git-main-asatran687-gmailcom.vercel.app)
 
 ## Setup
 
