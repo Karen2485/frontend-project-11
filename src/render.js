@@ -1,8 +1,11 @@
-const spinner = document.createElement('span');
-spinner.classList.add('spinner-grow');
-spinner.setAttribute('role', 'status');
-spinner.setAttribute('aria-hidden', 'true');
-spinner.setAttribute('style', 'margin-right: 0.3rem');
+const createSpinner = () => {
+  const spinner = document.createElement('span');
+  spinner.classList.add('spinner-grow');
+  spinner.setAttribute('role', 'status');
+  spinner.setAttribute('aria-hidden', 'true');
+  spinner.setAttribute('style', 'margin-right: 0.3rem');
+  return spinner;
+};
 
 const createElement = (tagName, options = {}) => {
   const element = document.createElement(tagName);
@@ -65,7 +68,7 @@ const handleFormState = (elements, formState, i18nInstance) => {
     case 'sending':
       elements.submitButton.disabled = true;
       elements.submitButton.textContent = '';
-      elements.submitButton.append(spinner, document.createTextNode(i18nInstance.t('form.loading')));
+      elements.submitButton.append(createSpinner(), document.createTextNode(i18nInstance.t('form.loading')));
       break;
 
     default:
