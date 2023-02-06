@@ -161,6 +161,10 @@ export default () => {
           });
       });
 
+      elements.submitButton.addEventListener('click', () => {
+        state.form.fields.url = elements.urlInput.value.trim();
+      });
+
       elements.exampleUrl.addEventListener('click', (e) => {
         e.preventDefault();
         state.form.fields.url = e.target.textContent.trim();
