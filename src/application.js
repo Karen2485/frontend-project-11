@@ -53,7 +53,7 @@ const setAutoUpdade = (feedId, state, timeout = 5000) => {
           addPosts(feedId, newItems, state);
         }
       })
-      .catch(console.log)
+      .catch(() => Promise.reject(new Error('default')))
       .finally(() => {
         setTimeout(inner, timeout);
       });
@@ -161,29 +161,24 @@ export default () => {
           });
       });
 
-      elements.urlInput.addEventListener('change', (e) => {
-        state.form.fields.url = e.target.value.trim();
-      });
-
       elements.exampleUrl.addEventListener('click', (e) => {
         e.preventDefault();
         state.form.fields.url = e.target.textContent.trim();
       });
 
       elements.posts.addEventListener('click', (e) => {
-        if (e.target.dataset.bsTarget === '#modal') {
-          const postId = parseInt(e.target.dataset.id, 10);
-          const post = state.posts
-            .find(({ id }) => postId === id);
-          const {
-            title,
-            description,
-            link,
-            id,
-          } = post;
-          state.readPostIds.add(id);
-          state.modal = { title, description, link };
-        }
+        if (e.target.dataset.bsTarget !== '#modal') { return; }
+        const postId = parseInt(e.target.dataset.id, 10);
+        const post = state.posts
+          .find(({ id }) => postId === id);
+        const {
+          title,
+          description,
+          link,
+          id,
+        } = post;
+        state.readPostIds.add(id);
+        state.modal = { title, description, link };
       });
     });
 };

@@ -18,3 +18,10 @@ make install
 ```sh
 make develop
 ```
+
+## System requirements for a simple RSS aggregator:
+# Operating system: 
+Windows, Mac OS, Linux, android, ios.
+# Web browser: 
+Internet Explorer, Mozilla Firefox, Google Chrome, Safari
+# Broadband connection to the Internet
