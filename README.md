@@ -20,8 +20,8 @@ make develop
 ```
 
 ## System requirements for a simple RSS aggregator:
-# Operating system: 
+### Operating system: 
 Windows, Mac OS, Linux, android, ios.
-# Web browser: 
+### Web browser: 
 Internet Explorer, Mozilla Firefox, Google Chrome, Safari
-# Broadband connection to the Internet
+### Broadband connection to the Internet
