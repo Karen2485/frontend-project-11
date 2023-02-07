@@ -121,6 +121,7 @@ export default () => {
       );
 
       elements.form.addEventListener('submit', (e) => {
+        state.form.fields.url = elements.urlInput.value.trim();
         e.preventDefault();
         state.form.error = '';
 
@@ -161,17 +162,13 @@ export default () => {
           });
       });
 
-      elements.submitButton.addEventListener('click', () => {
-        state.form.fields.url = elements.urlInput.value.trim();
-      });
-
       elements.exampleUrl.addEventListener('click', (e) => {
         e.preventDefault();
         state.form.fields.url = e.target.textContent.trim();
       });
 
       elements.posts.addEventListener('click', (e) => {
-        if (e.target.dataset.bsTarget !== '#modal') { return; }
+        if (e.target.dataset.bsTarget !== '#modal') return;
         const postId = parseInt(e.target.dataset.id, 10);
         const post = state.posts
           .find(({ id }) => postId === id);
