@@ -19,15 +19,14 @@ const getAllOriginsResponse = (url) => {
   const workingUrl = new URL(allOriginsLink);
   workingUrl.searchParams.set('disableCache', 'true');
   workingUrl.searchParams.set('url', url);
-
-  return axios.get(workingUrl);
+  return workingUrl.toString();
 };
 
-const getHttpContents = (url) => getAllOriginsResponse(url)
-  .catch(() => Promise.reject(new Error('networkError')))
+const getHttpContents = (url) => axios.get(getAllOriginsResponse(url))
+  .catch(() => { throw Error('networkError'); })
   .then((response) => {
     const responseData = response.data.contents;
-    return Promise.resolve(responseData);
+    return responseData;
   });
 
 const addPosts = (feedId, items, state) => {
@@ -168,7 +167,6 @@ export default () => {
       });
 
       elements.posts.addEventListener('click', (e) => {
-        if (e.target.dataset.bsTarget !== '#modal') return;
         const postId = parseInt(e.target.dataset.id, 10);
         const post = state.posts
           .find(({ id }) => postId === id);
@@ -179,6 +177,7 @@ export default () => {
           id,
         } = post;
         state.readPostIds.add(id);
+        if (e.target.dataset.bsTarget !== '#modal') return;
         state.modal = { title, description, link };
       });
     });
