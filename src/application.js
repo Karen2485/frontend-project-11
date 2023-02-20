@@ -40,18 +40,12 @@ const addPosts = (feedId, items, state) => {
 const setAutoUpdade = (feedId, state, timeout = 5000) => {
   const inner = () => {
     const links = state.feeds.map(({ link }) => link);
-    // console.log(links)
     const promises = links.map((url) => getHttpContents(url)
-      .then(response => parseRSS(response))
-      .then(parsedRSS => {
-      // console.log('parsedRSS > ', parsedRSS)
+      .then((response) => parseRSS(response))
+      .then((parsedRSS) => {
         const postsUrls = state.posts
-          .filter((post) => feedId === post.feedId)
           .map(({ link }) => link);
-          // console.log('postsUrls  >', postsUrls)
-          //  где-то тут ошибка, которую я в упор не вижу
         const newItems = parsedRSS.items.filter(({ link }) => !postsUrls.includes(link));
-        // console.log('newItems >', newItems);
         if (newItems.length > 0) {
           addPosts(feedId, newItems, state);
         }
@@ -123,8 +117,10 @@ export default () => {
         render(elements, initialState, i18nInstance),
       );
 
+      let inputData = state.form.fields.url;
+
       elements.form.addEventListener('submit', (e) => {
-        state.form.fields.url = elements.urlInput.value.trim();
+        inputData = elements.urlInput.value.trim();
         e.preventDefault();
         state.form.error = '';
 
@@ -135,10 +131,10 @@ export default () => {
           .notOneOf(getFeedUrls);
 
         schema
-          .validate(state.form.fields.url)
+          .validate(inputData)
           .then(() => {
             state.form.state = 'sending';
-            return getHttpContents(state.form.fields.url);
+            return getHttpContents(inputData);
           })
           .then(parseRSS)
           .then((parsedRSS) => {
@@ -148,13 +144,13 @@ export default () => {
               id: feedId,
               title: parsedRSS.title,
               description: parsedRSS.description,
-              link: state.form.fields.url,
+              link: inputData,
             };
             state.feeds.push(feed);
             addPosts(feedId, parsedRSS.items, state);
             setAutoUpdade(feedId, state);
 
-            state.form.fields.url = '';
+            inputData = '';
           })
           .catch((error) => {
             const message = error.message ?? 'default';
