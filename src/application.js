@@ -2,7 +2,6 @@ import axios from 'axios';
 import i18next from 'i18next';
 import onChange from 'on-change';
 import { setLocale, string } from 'yup';
-
 import resources from './locales/index.js';
 import render from './render.js';
 import parseRSS from './utils/parser.js';
@@ -39,20 +38,25 @@ const addPosts = (feedId, items, state) => {
 };
 
 const setAutoUpdade = (feedId, state, timeout = 5000) => {
-  const feed = state.feeds.find(({ id }) => feedId === id);
   const inner = () => {
-    getHttpContents(feed.link)
-      .then(parseRSS)
-      .then((parsedRSS) => {
+    const links = state.feeds.map(({ link }) => link);
+    // console.log(links)
+    const promises = links.map((url) => getHttpContents(url)
+      .then(response => parseRSS(response))
+      .then(parsedRSS => {
+      // console.log('parsedRSS > ', parsedRSS)
         const postsUrls = state.posts
           .filter((post) => feedId === post.feedId)
           .map(({ link }) => link);
+          // console.log('postsUrls  >', postsUrls)
+          //  где-то тут ошибка, которую я в упор не вижу
         const newItems = parsedRSS.items.filter(({ link }) => !postsUrls.includes(link));
+        // console.log('newItems >', newItems);
         if (newItems.length > 0) {
           addPosts(feedId, newItems, state);
         }
-      })
-      .catch(() => Promise.reject(new Error('default')))
+      }));
+    Promise.all(promises)
       .finally(() => {
         setTimeout(inner, timeout);
       });
