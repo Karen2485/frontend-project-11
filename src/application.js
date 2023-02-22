@@ -22,13 +22,11 @@ const getAllOriginsResponse = (url) => {
 };
 
 const getHttpContents = (url) => axios.get(getAllOriginsResponse(url))
-  .catch(() => { throw Error('networkError'); })
-  .then((response) => {
-    const responseData = response.data.contents;
-    return responseData;
+  .catch(() => {
+    throw Error('networkError');
   });
 
-const addPosts = (feedId, items, state) => {
+const addPosts = (items, state, feedId) => {
   const posts = items.map((item) => ({
     feedId,
     id: getId(),
@@ -37,26 +35,21 @@ const addPosts = (feedId, items, state) => {
   state.posts = posts.concat(state.posts);
 };
 
-const setAutoUpdade = (feedId, state, timeout = 5000) => {
-  const inner = () => {
-    const links = state.feeds.map(({ link }) => link);
-    const promises = links.map((url) => getHttpContents(url)
-      .then((response) => parseRSS(response))
-      .then((parsedRSS) => {
-        const postsUrls = state.posts
-          .map(({ link }) => link);
-        const newItems = parsedRSS.items.filter(({ link }) => !postsUrls.includes(link));
-        if (newItems.length > 0) {
-          addPosts(feedId, newItems, state);
-        }
-      }));
-    Promise.all(promises)
-      .finally(() => {
-        setTimeout(inner, timeout);
-      });
-  };
-
-  setTimeout(inner, timeout);
+const setAutoUpdade = (state) => {
+  const links = state.feeds.map(({ link }) => link);
+  const promises = links.map((url) => getHttpContents(url)
+    .then((response) => response.data.contents)
+    .then((responseData) => {
+      const parsedRSS = parseRSS(responseData);
+      const postsUrls = state.posts
+        .map(({ link }) => link);
+      const newItems = parsedRSS.items.filter(({ link }) => !postsUrls.includes(link));
+      if (newItems.length > 0) {
+        addPosts(newItems, state);
+      }
+    }));
+  Promise.all(promises)
+    .finally(setTimeout(() => setAutoUpdade(state), 5000));
 };
 
 export default () => {
@@ -136,10 +129,10 @@ export default () => {
             state.form.state = 'sending';
             return getHttpContents(inputData);
           })
-          .then(parseRSS)
-          .then((parsedRSS) => {
+          .then((response) => response.data.contents)
+          .then((responseData) => {
+            const parsedRSS = parseRSS(responseData);
             const feedId = getId();
-
             const feed = {
               id: feedId,
               title: parsedRSS.title,
@@ -147,8 +140,7 @@ export default () => {
               link: inputData,
             };
             state.feeds.push(feed);
-            addPosts(feedId, parsedRSS.items, state);
-            setAutoUpdade(feedId, state);
+            addPosts(parsedRSS.items, state, feedId);
 
             inputData = '';
           })
@@ -180,5 +172,6 @@ export default () => {
         if (e.target.dataset.bsTarget !== '#modal') return;
         state.modal = { title, description, link };
       });
+      setAutoUpdade(state);
     });
 };
