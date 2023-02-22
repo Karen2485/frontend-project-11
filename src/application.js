@@ -1,7 +1,7 @@
 import axios from 'axios';
 import i18next from 'i18next';
 import onChange from 'on-change';
-import { setLocale, string } from 'yup';
+import * as yup from 'yup';
 import resources from './locales/index.js';
 import render from './render.js';
 import parseRSS from './utils/parser.js';
@@ -55,7 +55,7 @@ const setAutoUpdade = (state) => {
 export default () => {
   const lng = 'ru';
 
-  setLocale({
+  yup.setLocale({
     mixed: {
       default: 'default',
       required: 'empty',
@@ -115,10 +115,12 @@ export default () => {
       elements.form.addEventListener('submit', (e) => {
         inputData = elements.urlInput.value.trim();
         e.preventDefault();
+        e.target.reset();
         state.form.error = '';
 
         const getFeedUrls = state.feeds.map(({ link }) => link);
-        const schema = string()
+        const schema = yup
+          .string()
           .required()
           .url()
           .notOneOf(getFeedUrls);

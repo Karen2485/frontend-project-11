@@ -4,7 +4,7 @@ export default (responseData) => {
   const xmlDocument = domParser.parseFromString(responseData, 'text/xml');
   const rootTagName = xmlDocument.documentElement.tagName.toLowerCase();
   if (rootTagName !== 'rss') {
-    return new Error('noRSS');
+    throw new Error('noRSS');
   }
 
   const channel = xmlDocument.querySelector('channel');
