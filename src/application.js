@@ -1,18 +1,14 @@
 import axios from 'axios';
 import i18next from 'i18next';
+import _ from 'lodash';
 import onChange from 'on-change';
 import * as yup from 'yup';
 import resources from './locales/index.js';
 import render from './render.js';
 import parseRSS from './utils/parser.js';
 
-let counter = 0;
-const getId = () => {
-  counter += 1;
-  return counter;
-};
 
-const getAllOriginsResponse = (url) => {
+const addProxy = (url) => {
   const allOriginsLink = 'https://allorigins.hexlet.app/get';
 
   const workingUrl = new URL(allOriginsLink);
@@ -21,26 +17,33 @@ const getAllOriginsResponse = (url) => {
   return workingUrl.toString();
 };
 
-const getHttpContents = (url) => axios.get(getAllOriginsResponse(url))
-  .catch(() => {
-    throw Error('networkError');
-  });
+const getHttpContents = (url) => axios.get(addProxy(url))
+.catch((error) => {
+  const message = error.message ?? 'default';
+  switch (message) {
+    case 'Network Error':
+      throw Error('networkError');
+    case 'default':
+      throw Error('default');
+    default:
+      break;
+  }
+});
 
 const addPosts = (items, state, feedId) => {
   const posts = items.map((item) => ({
     feedId,
-    id: getId(),
+    id: feedId = _.uniqueId(),
     ...item,
   }));
   state.posts = posts.concat(state.posts);
 };
 
-const setAutoUpdade = (state) => {
+const setAutoUpdade = (state, timeout = 5000) => {
   const links = state.feeds.map(({ link }) => link);
   const promises = links.map((url) => getHttpContents(url)
-    .then((response) => response.data.contents)
-    .then((responseData) => {
-      const parsedRSS = parseRSS(responseData);
+    .then((response) => {
+      const parsedRSS = parseRSS(response.data.contents);
       const postsUrls = state.posts
         .map(({ link }) => link);
       const newItems = parsedRSS.items.filter(({ link }) => !postsUrls.includes(link));
@@ -49,7 +52,7 @@ const setAutoUpdade = (state) => {
       }
     }));
   Promise.all(promises)
-    .finally(setTimeout(() => setAutoUpdade(state), 5000));
+    .finally(setTimeout(() => setAutoUpdade(state), timeout));
 };
 
 export default () => {
@@ -65,6 +68,15 @@ export default () => {
       url: 'invalidUrl',
     },
   });
+
+  const validateURL = async (url, parsedLinks) => {
+    const schema = yup
+    .string()
+    .required()
+    .url()
+    .notOneOf(parsedLinks);
+    return schema.validate(url);
+  };
 
   const i18nInstance = i18next.createInstance();
   i18nInstance
@@ -110,41 +122,31 @@ export default () => {
         render(elements, initialState, i18nInstance),
       );
 
-      let inputData = state.form.fields.url;
-
       elements.form.addEventListener('submit', (e) => {
-        inputData = elements.urlInput.value.trim();
+        const data = new FormData(e.target);
+        let currentURL = data.get('url').trim();
         e.preventDefault();
         e.target.reset();
         state.form.error = '';
-
-        const getFeedUrls = state.feeds.map(({ link }) => link);
-        const schema = yup
-          .string()
-          .required()
-          .url()
-          .notOneOf(getFeedUrls);
-
-        schema
-          .validate(inputData)
+        state.form.state = 'sending';
+        const parsedLinks = state.feeds.map(({ link }) => link);
+        validateURL(currentURL, parsedLinks)
           .then(() => {
-            state.form.state = 'sending';
-            return getHttpContents(inputData);
+            return getHttpContents(currentURL);
           })
-          .then((response) => response.data.contents)
-          .then((responseData) => {
-            const parsedRSS = parseRSS(responseData);
-            const feedId = getId();
+          .then((response) => {
+            const parsedRSS = parseRSS(response.data.contents);
+            const feedId = _.uniqueId();
             const feed = {
               id: feedId,
               title: parsedRSS.title,
               description: parsedRSS.description,
-              link: inputData,
+              link: currentURL,
             };
             state.feeds.push(feed);
             addPosts(parsedRSS.items, state, feedId);
 
-            inputData = '';
+            currentURL = '';
           })
           .catch((error) => {
             const message = error.message ?? 'default';
@@ -163,7 +165,7 @@ export default () => {
       elements.posts.addEventListener('click', (e) => {
         const postId = parseInt(e.target.dataset.id, 10);
         const post = state.posts
-          .find(({ id }) => postId === id);
+          .find(({ id }) => postId == id);
         const {
           title,
           description,
