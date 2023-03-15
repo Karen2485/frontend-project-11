@@ -2,8 +2,8 @@ const domParser = new DOMParser();
 
 export default (responseData) => {
   const xmlDocument = domParser.parseFromString(responseData, 'text/xml');
-  const rootTagName = xmlDocument.documentElement.tagName.toLowerCase();
-  if (rootTagName !== 'rss') {
+  const parserErrorCheck = xmlDocument.querySelector('parsererror');
+  if (parserErrorCheck) {
     throw new Error('noRSS');
   }
 

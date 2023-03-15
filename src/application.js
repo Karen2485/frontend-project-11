@@ -7,6 +7,7 @@ import resources from './locales/index.js';
 import render from './render.js';
 import parseRSS from './utils/parser.js';
 
+const getId = () => _.uniqueId();
 
 const addProxy = (url) => {
   const allOriginsLink = 'https://allorigins.hexlet.app/get';
@@ -18,22 +19,22 @@ const addProxy = (url) => {
 };
 
 const getHttpContents = (url) => axios.get(addProxy(url))
-.catch((error) => {
-  const message = error.message ?? 'default';
-  switch (message) {
-    case 'Network Error':
-      throw Error('networkError');
-    case 'default':
-      throw Error('default');
-    default:
-      break;
-  }
-});
+  .catch((error) => {
+    const message = error.message ?? 'default';
+    switch (message) {
+      case 'Network Error':
+        throw Error('networkError');
+      case 'default':
+        throw Error('default');
+      default:
+        break;
+    }
+  });
 
 const addPosts = (items, state, feedId) => {
   const posts = items.map((item) => ({
     feedId,
-    id: feedId = _.uniqueId(),
+    id: getId(),
     ...item,
   }));
   state.posts = posts.concat(state.posts);
@@ -52,6 +53,7 @@ const setAutoUpdade = (state, timeout = 5000) => {
       }
     }));
   Promise.all(promises)
+    .catch(() => {})
     .finally(setTimeout(() => setAutoUpdade(state), timeout));
 };
 
@@ -71,10 +73,10 @@ export default () => {
 
   const validateURL = async (url, parsedLinks) => {
     const schema = yup
-    .string()
-    .required()
-    .url()
-    .notOneOf(parsedLinks);
+      .string()
+      .required()
+      .url()
+      .notOneOf(parsedLinks);
     return schema.validate(url);
   };
 
@@ -131,12 +133,10 @@ export default () => {
         state.form.state = 'sending';
         const parsedLinks = state.feeds.map(({ link }) => link);
         validateURL(currentURL, parsedLinks)
-          .then(() => {
-            return getHttpContents(currentURL);
-          })
+          .then(() => getHttpContents(currentURL))
           .then((response) => {
             const parsedRSS = parseRSS(response.data.contents);
-            const feedId = _.uniqueId();
+            const feedId = getId();
             const feed = {
               id: feedId,
               title: parsedRSS.title,
@@ -163,9 +163,8 @@ export default () => {
       });
 
       elements.posts.addEventListener('click', (e) => {
-        const postId = parseInt(e.target.dataset.id, 10);
         const post = state.posts
-          .find(({ id }) => postId == id);
+          .find(({ id }) => e.target.dataset.id === id);
         const {
           title,
           description,
