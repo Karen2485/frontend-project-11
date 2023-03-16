@@ -93,7 +93,6 @@ export default () => {
         urlInput: document.getElementById('url-input'),
         submitButton: document.querySelector('button[type="submit"]'),
         feedback: document.querySelector('.feedback'),
-        exampleUrl: document.querySelector('.example-url'),
         feeds: document.querySelector('.feeds'),
         posts: document.querySelector('.posts'),
         modal: {
@@ -102,17 +101,12 @@ export default () => {
           fullArticleButton: document.querySelector('.full-article'),
         },
       };
+// metka
 
       const initialState = {
         form: {
           state: 'filling',
-          fields: { url: '' },
           error: '',
-        },
-        modal: {
-          title: '',
-          description: '',
-          link: '',
         },
         feeds: [],
         posts: [],
@@ -155,11 +149,6 @@ export default () => {
           .finally(() => {
             state.form.state = 'filling';
           });
-      });
-
-      elements.exampleUrl.addEventListener('click', (e) => {
-        e.preventDefault();
-        state.form.fields.url = e.target.textContent.trim();
       });
 
       elements.posts.addEventListener('click', (e) => {
