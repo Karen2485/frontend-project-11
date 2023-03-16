@@ -57,7 +57,7 @@ const makeContainer = (title, listElems) => {
   return cardBorder;
 };
 
-const handleFormState = (elements, formState, i18nInstance) => {
+const handleFormState = (elements, formState, state, i18nInstance) => {
   switch (formState) {
     case 'filling':
       elements.submitButton.disabled = false;
@@ -69,6 +69,13 @@ const handleFormState = (elements, formState, i18nInstance) => {
       elements.submitButton.disabled = true;
       elements.submitButton.textContent = '';
       elements.submitButton.append(createSpinner(), document.createTextNode(i18nInstance.t('form.loading')));
+      break;
+
+    case 'error':
+      elements.urlInput.classList.add('is-invalid');
+      elements.feedback.classList.remove('text-success');
+      elements.feedback.classList.add('text-danger');
+      elements.feedback.textContent = i18nInstance.t(state.error);
       break;
 
     default:
@@ -179,7 +186,7 @@ const handlePosts = (container, posts, readPostIds, i18nInstance) => {
 export default (elements, state, i18nInstance) => (path, value) => {
   switch (path) {
     case 'form.state':
-      handleFormState(elements, value, i18nInstance);
+      handleFormState(elements, value, state, i18nInstance);
       break;
 
     case 'form.fields.url':
