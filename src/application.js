@@ -101,7 +101,6 @@ export default () => {
           fullArticleButton: document.querySelector('.full-article'),
         },
       };
-// metka
 
       const initialState = {
         form: {
