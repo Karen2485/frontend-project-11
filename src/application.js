@@ -141,9 +141,8 @@ export default () => {
             currentURL = '';
           })
           .catch((error) => {
-            if (error.isParsingError) {
-              state.form.error = 'noRSS';
-            }
+            const message = error.isParsingError ? 'noRSS' : 'default';
+            state.form.error = message;
           })
           .finally(() => {
             state.form.state = 'idle';
