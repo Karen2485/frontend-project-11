@@ -59,7 +59,7 @@ const makeContainer = (title, listElems) => {
 
 const handleFormState = (elements, formState, state, i18nInstance) => {
   switch (formState) {
-    case 'filling':
+    case 'idle':
       elements.submitButton.disabled = false;
       elements.submitButton.textContent = i18nInstance.t('form.submit');
       elements.urlInput.focus();

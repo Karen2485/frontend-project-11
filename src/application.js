@@ -53,7 +53,6 @@ const setAutoUpdade = (state, timeout = 5000) => {
       }
     }));
   Promise.all(promises)
-    .catch(() => {})
     .finally(setTimeout(() => setAutoUpdade(state), timeout));
 };
 
@@ -104,7 +103,7 @@ export default () => {
 
       const initialState = {
         form: {
-          state: 'filling',
+          state: 'idle',
           error: '',
         },
         feeds: [],
@@ -142,11 +141,12 @@ export default () => {
             currentURL = '';
           })
           .catch((error) => {
-            const message = error.message ?? 'default';
-            state.form.error = message;
+            if (error.isParsingError) {
+              state.form.error = 'noRSS';
+            }
           })
           .finally(() => {
-            state.form.state = 'filling';
+            state.form.state = 'idle';
           });
       });
 

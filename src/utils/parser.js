@@ -4,7 +4,9 @@ export default (responseData) => {
   const xmlDocument = domParser.parseFromString(responseData, 'text/xml');
   const parserErrorCheck = xmlDocument.querySelector('parsererror');
   if (parserErrorCheck) {
-    throw new Error('noRSS');
+    const error = new Error(parserErrorCheck.textContent);
+    error.isParsingError = true;
+    throw error;
   }
 
   const channel = xmlDocument.querySelector('channel');
