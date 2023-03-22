@@ -141,7 +141,7 @@ export default () => {
             currentURL = '';
           })
           .catch((error) => {
-            const message = error.isParsingError ? 'noRSS' : 'default';
+            const message = error.isParsingError ? 'noRSS' : '';
             state.form.error = message;
           })
           .finally(() => {
