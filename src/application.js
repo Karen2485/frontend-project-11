@@ -18,18 +18,7 @@ const addProxy = (url) => {
   return workingUrl.toString();
 };
 
-const getHttpContents = (url) => axios.get(addProxy(url))
-  .catch((error) => {
-    const message = error.message ?? 'default';
-    switch (message) {
-      case 'Network Error':
-        throw Error('networkError');
-      case 'default':
-        throw Error('default');
-      default:
-        break;
-    }
-  });
+const getHttpContents = (url) => axios.get(addProxy(url));
 
 const addPosts = (items, state, feedId) => {
   const posts = items.map((item) => ({
@@ -141,7 +130,10 @@ export default () => {
             currentURL = '';
           })
           .catch((error) => {
-            const message = error.isParsingError ? 'noRSS' : error.message;
+            let message = error.isParsingError ? 'noRSS' : error.message;
+            if (error.message === 'Network Error') {
+              message = 'networkError';
+            }
             state.form.error = message;
           })
           .finally(() => {

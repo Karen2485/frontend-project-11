@@ -75,7 +75,7 @@ const handleFormState = (elements, formState, state, i18nInstance) => {
       elements.urlInput.classList.add('is-invalid');
       elements.feedback.classList.remove('text-success');
       elements.feedback.classList.add('text-danger');
-      elements.feedback.textContent = i18nInstance.t(state.error);
+      elements.feedback.textContent = i18nInstance.t(state.form.error);
       break;
 
     default:
